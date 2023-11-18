@@ -42,4 +42,15 @@ contract EnglishAuctionContractTest is Test {
         auctionContract.depositNFT(100, 50, address(nftContract), mintedTokenId);
     }
 
+    function testDepositNFT() public {
+        (address seller, uint256 deadline, uint256 reservePrice, bool ended, EnglishAuctionContract.Bid memory highestBid, address nft) = auctionContract.tokenIdToAuction(1);
+        assertEq(seller, testSeller);
+        assertEq(deadline, 100);
+        assertEq(reservePrice, 50);
+        assertEq(ended, false);
+        assertEq(highestBid.bidder, address(0));
+        assertEq(highestBid.amount, 0);
+        assertEq(address(nft), address(nftContract));
+    }
+
 }
