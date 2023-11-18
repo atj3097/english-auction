@@ -3,12 +3,11 @@ pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
 import "../../src/EnglishAuctionContract.sol";
-
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
 contract MyNFT is ERC721URIStorage {
 
-    uint256 public tokenId;
+    uint256 public tokenId = 0;
 
     constructor() ERC721("MyNFT", "MNFT") {}
 
@@ -32,11 +31,12 @@ contract EnglishAuctionContractTest is Test {
     function setUp() public {
         nftContract = new MyNFT();
         auctionContract = new EnglishAuctionContract();
-        vm.prank(testSeller);
-        nftContract.mintNFT(testSeller, "someURI");
 
         vm.prank(testSeller);
-        auctionContract.depositNFT(100, 50, address(nftContract), nftContract.tokenId());
+        uint256 mintedTokenId = nftContract.mintNFT(testSeller, "someURI");
+
+        vm.prank(testSeller);
+        auctionContract.depositNFT(100, 50, address(nftContract), mintedTokenId);
     }
 
 }
