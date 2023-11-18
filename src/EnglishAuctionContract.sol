@@ -31,11 +31,17 @@ contract EnglishAuctionContract is IERC721Receiver {
     function depositNFT(uint256 _deadline, uint256 _reservePrice, address nft, uint256 tokenId) public {
         require(_deadline > block.timestamp, "Deadline must be in the future");
         require(IERC721(nft).ownerOf(tokenId) == msg.sender, "You must own the NFT");
-        auction = Auction(msg.sender, _deadline, _reservePrice, false, Bid(address(0), 0));
+        Auction storage auction = tokenIdToAuction[tokenId];
+        auction.seller = msg.sender;
+        auction.deadline = _deadline;
+        auction.reservePrice = _reservePrice;
+        auction.ended = false;
+        auction.highestBid = Bid(address(0), 0);
+
         IERC721(nft).transferFrom(msg.sender, address(this), tokenId);
-        tokenIdToAuction[tokenId] = auction;
         nftToAuction[nft][tokenId] = auction;
     }
+
 
     function bid(uint256 _tokenId) public payable {
         Auction storage auction = tokenIdToAuction[_tokenId];
