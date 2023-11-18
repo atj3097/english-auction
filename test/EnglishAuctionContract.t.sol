@@ -4,6 +4,8 @@ pragma solidity ^0.8.13;
 import "forge-std/Test.sol";
 import "../../src/EnglishAuctionContract.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "forge-std/console.sol";
+
 
 contract MyNFT is ERC721URIStorage {
 
@@ -27,6 +29,7 @@ contract EnglishAuctionContractTest is Test {
     EnglishAuctionContract public auctionContract;
     MyNFT public nftContract;
     address public testSeller = address(0x1);
+    uint256 public testTokenId;
 
     function setUp() public {
         nftContract = new MyNFT();
@@ -34,6 +37,8 @@ contract EnglishAuctionContractTest is Test {
 
         vm.prank(testSeller);
         uint256 mintedTokenId = nftContract.mintNFT(testSeller, "someURI");
+        testTokenId = mintedTokenId;
+        console.log("mintedTokenId", mintedTokenId);
 
         vm.prank(testSeller);
         nftContract.approve(address(auctionContract), mintedTokenId);
@@ -55,14 +60,14 @@ contract EnglishAuctionContractTest is Test {
 
     function testBid() public {
         vm.prank(address(this));
-        auctionContract.bid(124);
+        auctionContract.bid{value: 120}(testTokenId);
         (address seller, uint256 deadline, uint256 reservePrice, bool ended, EnglishAuctionContract.Bid memory highestBid, address nft) = auctionContract.tokenIdToAuction(0);
         assertEq(seller, testSeller);
         assertEq(deadline, 100);
         assertEq(reservePrice, 50);
         assertEq(ended, false);
         assertEq(highestBid.bidder, address(this));
-        assertEq(highestBid.amount, 100);
+        assertEq(highestBid.amount, 120);
         assertEq(address(nft), address(nftContract));
     }
 
