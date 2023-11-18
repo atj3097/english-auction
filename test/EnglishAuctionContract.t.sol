@@ -35,6 +35,8 @@ contract EnglishAuctionContractTest is Test {
         vm.prank(testSeller);
         uint256 mintedTokenId = nftContract.mintNFT(testSeller, "someURI");
 
+        nftContract.approve(address(auctionContract), mintedTokenId);
+
         vm.prank(testSeller);
         auctionContract.depositNFT(100, 50, address(nftContract), mintedTokenId);
     }
