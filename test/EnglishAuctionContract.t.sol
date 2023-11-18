@@ -53,4 +53,17 @@ contract EnglishAuctionContractTest is Test {
         assertEq(address(nft), address(nftContract));
     }
 
+    function testBid() public {
+        vm.prank(address(this));
+        auctionContract.bid(124);
+        (address seller, uint256 deadline, uint256 reservePrice, bool ended, EnglishAuctionContract.Bid memory highestBid, address nft) = auctionContract.tokenIdToAuction(0);
+        assertEq(seller, testSeller);
+        assertEq(deadline, 100);
+        assertEq(reservePrice, 50);
+        assertEq(ended, false);
+        assertEq(highestBid.bidder, address(this));
+        assertEq(highestBid.amount, 100);
+        assertEq(address(nft), address(nftContract));
+    }
+
 }
