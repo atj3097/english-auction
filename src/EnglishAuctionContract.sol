@@ -3,8 +3,9 @@ pragma solidity ^0.8.13;
 // A seller calls deposit() to deposit an NFT into a contract along with a deadline and a reserve price. Buyers can bid on that NFT up until the deadline, and the highest bid wins. If the reserve price is not met, the NFT is not sold. Multiple auctions can happen at the same time. Buyers who did not win can withdraw their bid. The winner is not able to withdraw their bid and must complete the trade to buy the NFT. The seller can also end the auction by calling sellerEndAuction() which only works after expiration, and if the reserve is met. The winner will be transferred the NFT and the seller will receive the Ethereum.
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import "openzeppelin-contracts/contracts/token/ERC721/utils/ERC721Holder.sol";
 
-contract EnglishAuctionContract is IERC721Receiver {
+contract EnglishAuctionContract is ERC721Holder {
 
     struct Bid {
         address bidder;
@@ -68,7 +69,7 @@ contract EnglishAuctionContract is IERC721Receiver {
         payable(msg.sender).transfer(amount);
     }
 
-    function completeTrade(uint256 _tokenId) public {
+    function sellerEndAuction(uint256 _tokenId) public {
         Auction storage auction = tokenIdToAuction[_tokenId];
         address nft = auction.nft;
         require(auction.seller != address(0), "Auction does not exist");
@@ -79,5 +80,4 @@ contract EnglishAuctionContract is IERC721Receiver {
         IERC721(nft).transferFrom(address(this), msg.sender, _tokenId);
         payable(auction.seller).transfer(auction.highestBid.amount);
     }
-
 }
