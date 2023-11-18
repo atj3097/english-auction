@@ -18,8 +18,8 @@ contract EnglishAuctionContract is IERC721Receiver {
         bool ended;
         Bid highestBid;
         mapping(address => Bid) bids;
+        address nft;
     }
-    mapping (address => mapping (uint256 => Auction)) public nftToAuction;
     mapping (uint256 => Auction) public tokenIdToAuction;
 
 
@@ -37,9 +37,8 @@ contract EnglishAuctionContract is IERC721Receiver {
         auction.reservePrice = _reservePrice;
         auction.ended = false;
         auction.highestBid = Bid(address(0), 0);
-
+        auction.nft = nft;
         IERC721(nft).transferFrom(msg.sender, address(this), tokenId);
-        nftToAuction[nft][tokenId] = auction;
     }
 
 
