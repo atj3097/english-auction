@@ -8,13 +8,13 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
 contract MyNFT is ERC721URIStorage {
 
-    uint256 public _tokenId;
+    uint256 public tokenId;
 
     constructor() ERC721("MyNFT", "MNFT") {}
 
     function mintNFT(address recipient, string memory tokenURI) public returns (uint256) {
-        _tokenId++;
-        uint256 newItemId = _tokenId;
+        tokenId++;
+        uint256 newItemId = tokenId;
         _mint(recipient, newItemId);
         _setTokenURI(newItemId, tokenURI);
         return newItemId;
@@ -23,7 +23,7 @@ contract MyNFT is ERC721URIStorage {
 
 
 
-contract EnglishAuctionContractTest {
+contract EnglishAuctionContractTest is Test {
 
     EnglishAuctionContract public auctionContract;
     MyNFT public nftContract;
@@ -36,7 +36,7 @@ contract EnglishAuctionContractTest {
         nftContract.mintNFT(testSeller, "someURI");
 
         vm.prank(testSeller);
-        auctionContract.depositNFT(100, 50, address(nftContract), nftContract.tokendId());
+        auctionContract.depositNFT(100, 50, address(nftContract), nftContract.tokenId());
     }
 
 }
