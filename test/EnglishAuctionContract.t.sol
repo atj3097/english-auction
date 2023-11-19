@@ -86,6 +86,15 @@ contract EnglishAuctionContractTest is Test {
         assertEq(address(nft), address(nftContract));
     }
 
+    function testWithdrawBidFail() public {
+        vm.prank(address(this));
+        auctionContract.bid{value: 120}(testTokenId);
+        vm.prank(address(this));
+        auctionContract.withdrawBid(testTokenId);
+        vm.prank(address(this));
+        auctionContract.withdrawBid(testTokenId);
+    }
+
 
 
 }
