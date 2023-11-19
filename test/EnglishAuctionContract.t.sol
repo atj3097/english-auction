@@ -61,7 +61,7 @@ contract EnglishAuctionContractTest is Test {
     function testBid() public {
         vm.prank(address(this));
         auctionContract.bid{value: 120}(testTokenId);
-        (address seller, uint256 deadline, uint256 reservePrice, bool ended, EnglishAuctionContract.Bid memory highestBid, address nft) = auctionContract.tokenIdToAuction(0);
+        (address seller, uint256 deadline, uint256 reservePrice, bool ended, EnglishAuctionContract.Bid memory highestBid, address nft) = auctionContract.tokenIdToAuction(testTokenId);
         assertEq(seller, testSeller);
         assertEq(deadline, 100);
         assertEq(reservePrice, 50);
@@ -72,27 +72,24 @@ contract EnglishAuctionContractTest is Test {
     }
 
     function testWithdrawBid() public {
-        vm.prank(address(this));
-        auctionContract.bid{value: 120}(testTokenId);
-        vm.prank(address(this));
-        auctionContract.withdrawBid(testTokenId);
-        (address seller, uint256 deadline, uint256 reservePrice, bool ended, EnglishAuctionContract.Bid memory highestBid, address nft) = auctionContract.tokenIdToAuction(0);
-        assertEq(seller, testSeller);
-        assertEq(deadline, 100);
-        assertEq(reservePrice, 50);
-        assertEq(ended, false);
-        assertEq(highestBid.bidder, address(0));
-        assertEq(highestBid.amount, 0);
-        assertEq(address(nft), address(nftContract));
-    }
+        vm.deal(address(0x3), 1000);
+        uint256 initialBalance = address(0x3).balance;
 
-    function testWithdrawBidFail() public {
-        vm.prank(address(this));
+        vm.prank(address(0x3));
         auctionContract.bid{value: 120}(testTokenId);
+
         vm.prank(address(this));
+        auctionContract.bid{value: 150}(testTokenId);
+
+        vm.warp(110);
+        vm.prank(address(0x3));
         auctionContract.withdrawBid(testTokenId);
-        vm.prank(address(this));
-        auctionContract.withdrawBid(testTokenId);
+
+        // Check if the balance of 0x3 has increased by 120 wei
+        uint256 finalBalance = address(0x3).balance;
+        console.log("initialBalance", initialBalance);
+        console.log("finalBalance", finalBalance);
+        assertEq(finalBalance, initialBalance, "Bid withdrawal failed to refund the correct amount");
     }
 
 

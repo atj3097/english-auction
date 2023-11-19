@@ -4,6 +4,7 @@ pragma solidity ^0.8.13;
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "openzeppelin-contracts/contracts/token/ERC721/utils/ERC721Holder.sol";
+import "forge-std/console.sol";
 
 contract EnglishAuctionContract is ERC721Holder {
 
@@ -34,6 +35,7 @@ contract EnglishAuctionContract is ERC721Holder {
         require(IERC721(nft).ownerOf(tokenId) == msg.sender, "You must own the NFT");
         Auction storage auction = tokenIdToAuction[tokenId];
         auction.seller = msg.sender;
+        console.log("seller", auction.seller);
         auction.deadline = _deadline;
         auction.reservePrice = _reservePrice;
         auction.ended = false;
